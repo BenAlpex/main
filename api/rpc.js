@@ -39,6 +39,8 @@ async function auth(b){
  if(!b.tok)return null;const h=await r.hgetall('u:'+String(b.n||'').toLowerCase());
  return h&&String(h.tok)===String(b.tok)?{n:String(h.n),k:String(h.n).toLowerCase(),bal:+h.bal,admin:String(h.role)==='admin',ban:+h.ban===1}:false}
 module.exports=async(q,s)=>{
+ if(q.method==='GET'){let rd='ok';try{await r.set('ping',1,{ex:60})}catch(e){rd=String(e&&e.message||e)}
+  return s.status(200).json({server:'ok',redisUrl:!!(process.env.UPSTASH_REDIS_REST_URL||process.env.KV_REST_API_URL),redisToken:!!(process.env.UPSTASH_REDIS_REST_TOKEN||process.env.KV_REST_API_TOKEN),adminSet:!!(ADM&&APASS),redis:rd})}
  const b=q.body||{},now=Date.now(),ok=o=>s.status(200).json(o),er=m=>s.status(200).json({e:m});
  try{
   const a=b.a;
